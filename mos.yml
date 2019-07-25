@@ -1,0 +1,23 @@
+author: mongoose-os
+type: lib
+description: An empty lib that does nothing
+version: 1.0
+
+includes:
+  - include
+sources:
+  - src
+filesystem:
+  - fs
+
+config_schema:
+
+libs:
+  #- origin: https://github.com/mongoose-os-libs/core
+
+tags:
+  - c
+  - docs:misc:Empty
+
+manifest_version: 2017-09-29
+
