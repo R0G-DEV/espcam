@@ -1,7 +1,6 @@
-# A blank Mongoose OS library
+# ESP32 Cam Library
 
 
 ## Overview
 
-This blank library is intended to be used as a skeleton for deleloping
-Mongoose OS libraries.
+Support for Ai Thinker Cam Module with Mongoose OS

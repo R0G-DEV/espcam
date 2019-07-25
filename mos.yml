@@ -1,6 +1,6 @@
-author: mongoose-os
+author: R0G
 type: lib
-description: An empty lib that does nothing
+description: ESP32 Cam Library
 version: 1.0
 
 includes:
