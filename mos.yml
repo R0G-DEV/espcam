@@ -13,7 +13,7 @@ filesystem:
 config_schema:
 
 libs:
-  #- origin: https://github.com/mongoose-os-libs/core
+- name: espcam
 
 tags:
   - c

@@ -1,5 +1,4 @@
-#include "mgos.h"
-#include "esp_camera.h"
+#include "mgos_espcam.h"
 
 //AI-THINKER PINS
 #define CAM_PIN_PWDN    32 
@@ -55,11 +54,11 @@ esp_err_t camera_init(){
     //power up the camera if PWDN pin is defined
     if(CAM_PIN_PWDN != -1){
 
-      mgos_gpio_set_mode(CAM_PIN_PWDN,GPIO_MODE_OUTPUT);
-      mgos_gpio_write(CAM_PIN_PWDN,true);
+      //mgos_gpio_set_mode(CAM_PIN_PWDN,GPIO_MODE_OUTPUT);
+      //mgos_gpio_write(CAM_PIN_PWDN,true);
 
-      //pinMode(CAM_PIN_PWDN, GPIO_MODE_OUTPUT);
-      //digitalWrite(CAM_PIN_PWDN,true);
+      pinMode(CAM_PIN_PWDN, GPIO_MODE_OUTPUT);
+      digitalWrite(CAM_PIN_PWDN,true);
 
     }
 
@@ -91,10 +90,8 @@ esp_err_t camera_capture(){
     esp_camera_fb_return(fb);
     return ESP_OK;
 }
-/*
 
-
-bool mgos_empty_init(void) {
+// NOTE: library init function must be called mgos_LIBNAME_init()
+bool mgos_espcam_init(void) {
   return true;
 }
- */
