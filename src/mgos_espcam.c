@@ -1,4 +1,5 @@
 #include "mgos_espcam.h"
+#include "Arduino.h"
 
 //AI-THINKER PINS
 #define CAM_PIN_PWDN    32 
