@@ -3,21 +3,23 @@ type: lib
 description: ESP32 Cam Library
 version: 1.0
 
-includes:
-  - include
 sources:
   - src
+includes:
+  - include
 filesystem:
   - fs
 
 config_schema:
 
+#libs:
+#- name: espcam
+
 libs:
-- name: espcam
+  - origin: https://github.com/mongoose-os-libs/core
 
 tags:
   - c
-  - docs:misc:Empty
+  - docs:esp32:camera
 
 manifest_version: 2017-09-29
-
