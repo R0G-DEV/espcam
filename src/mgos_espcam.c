@@ -1,5 +1,4 @@
 #include "mgos_espcam.h"
-#include "Arduino.h"
 
 //AI-THINKER PINS
 #define CAM_PIN_PWDN    32 
@@ -51,17 +50,6 @@ static camera_config_t camera_config = {
 };
 
 esp_err_t camera_init(){
-
-    //power up the camera if PWDN pin is defined
-    if(CAM_PIN_PWDN != -1){
-
-      //mgos_gpio_set_mode(CAM_PIN_PWDN,GPIO_MODE_OUTPUT);
-      //mgos_gpio_write(CAM_PIN_PWDN,true);
-
-      pinMode(CAM_PIN_PWDN, GPIO_MODE_OUTPUT);
-      digitalWrite(CAM_PIN_PWDN,true);
-
-    }
 
     //initialize the camera
     esp_err_t err = esp_camera_init(&camera_config);
