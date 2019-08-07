@@ -1,0 +1,8 @@
+{
+  "files.associations": {
+    "*.json": "jsonc",
+    "esp_camera.h": "c",
+    "mgos_espcam.h": "c",
+    "stdbool.h": "c"
+  }
+}
