@@ -21,7 +21,7 @@ extern "C" {
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include "mgos_espcam.h"
+#include "esp_camera.h"
 
 typedef size_t (* jpg_out_cb)(void * arg, size_t index, const void* data, size_t len);
 

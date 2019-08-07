@@ -17,8 +17,13 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
+#include "sdkconfig.h"
+
+#ifdef CONFIG_LEGACY_INCLUDE_COMMON_HEADERS
 #include "soc/soc.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -268,7 +273,7 @@ void ets_install_uart_printf(void);
         ets_printf("%s %u \n", __FILE__, __LINE__); \
         while (1) {};   \
     }                   \
-} while (0);
+} while (0)
 
 /**
   * @}
