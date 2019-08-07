@@ -12,14 +12,10 @@ filesystem:
 
 config_schema:
 
-#libs:
-#- name: espcam
-
 libs:
-  - origin: https://github.com/mongoose-os-libs/core
 
 tags:
   - c
   - docs:esp32:camera
 
-manifest_version: 2017-09-29
+manifest_version: 2018-09-24
