@@ -26,7 +26,6 @@
 #include "soc/i2s_struct.h"
 #include "soc/io_mux_reg.h"
 #include "driver/gpio.h"
-#include "mgos_gpio.h"
 #include "driver/rtc_io.h"
 #include "driver/periph_ctrl.h"
 #include "esp_intr_alloc.h"
@@ -581,9 +580,6 @@ static void IRAM_ATTR i2s_isr(void *arg)
 
 static void IRAM_ATTR vsync_isr(void *arg)
 {
-
-  ESP_LOGD(TAG, "vsync_isr handler start");
-
   GPIO.status1_w1tc.val = GPIO.status1.val;
   GPIO.status_w1tc = GPIO.status;
   bool need_yield = false;
@@ -1157,8 +1153,7 @@ esp_err_t camera_init(const camera_config_t *config)
     }
   }
 
-  //ToDo: core affinity?
-  //modified to core 0 !!
+  //NOTE!! core needs to be set to 0 for freertos unicore mode else core dump
   if (!xTaskCreatePinnedToCore(&dma_filter_task, "dma_filter", 4096, NULL, 10, &s_state->dma_filter_task, 0))
   {
     ESP_LOGE(TAG, "Failed to create DMA filter task");
@@ -1169,40 +1164,41 @@ esp_err_t camera_init(const camera_config_t *config)
   vsync_intr_disable();
 
 
-  //#define ESP_ERR_NOT_FOUND           0x105   /*!< Requested resource not found */
 
-  //ESP_ERR_NOT_FOUND No free interrupt found with the specified flags
-  //https://docs.espressif.com/projects/esp-idf/en/latest/api-reference/peripherals/gpio.html#_CPPv424gpio_install_isr_servicei
+  /*## MONGOOSE ESPCAM LIB STATUS ##
 
-  //[Aug  5 13:24:14.384] ?[0;31mE (1104) camera: gpio_install_isr_service failed (105)?[0m
-  //[Aug  5 13:24:14.385] ?[0;31mE (1114) camera: Camera init failed with error 0x105?[0m
 
-  //err = gpio_install_isr_service(ESP_INTR_FLAG_LEVEL1 | ESP_INTR_FLAG_IRAM);
-  err = gpio_install_isr_service(ESP_INTR_FLAG_EDGE);
+    GPIO Install ISR service fails with code 105  => ESP_ERR_NOT_FOUND No free interrupt found with the specified flags
+
+    https://docs.espressif.com/projects/esp-idf/en/latest/api-reference/peripherals/gpio.html#_CPPv424gpio_install_isr_servicei
+
+    ## MOS CONSOLE ##
+
+    [Aug  5 13:24:14.384] ?[0;31mE (1104) camera: gpio_install_isr_service failed (105)?[0m
+    [Aug  5 13:24:14.385] ?[0;31mE (1114) camera: Camera init failed with error 0x105?[0m
+
+    ## NOTES ##
+
+    We may have to reserve interrupt??
+    https://docs.espressif.com/projects/esp-idf/en/latest/api-reference/system/intr_alloc.html#_CPPv414esp_intr_allocii14intr_handler_tPvP13intr_handle_t
+
+  */
+  err = gpio_install_isr_service(ESP_INTR_FLAG_LEVEL1 | ESP_INTR_FLAG_IRAM);
+  ESP_LOGD(TAG, "gpio_install_isr_service state (%x)", err);
   if (err != ESP_OK)
   {
     ESP_LOGE(TAG, "gpio_install_isr_service failed (%x)", err);
     goto fail;
   }
+  
 
-
-
-
-
-
-  ESP_LOGE(TAG, "pre gpio_isr_handler_add");
-
-
-  //err = gpio_isr_handler_add(s_state->config.pin_vsync, &vsync_isr, NULL);
-
-  err = gpio_isr_handler_add(25, vsync_isr, NULL);
+  //Add Vsync PIN 25 handler
+  err = gpio_isr_handler_add(s_state->config.pin_vsync, &vsync_isr, NULL);
   if (err != ESP_OK)
   {
     ESP_LOGE(TAG, "vsync_isr_handler_add failed (%x)", err);
     goto fail;
   }
-
-  ESP_LOGE(TAG, "post gpio_isr_handler_add");
 
   s_state->sensor.status.framesize = frame_size;
   s_state->sensor.pixformat = pix_format;
@@ -1314,16 +1310,10 @@ esp_err_t esp_camera_deinit()
 
 camera_fb_t *esp_camera_fb_get()
 {
-
-  ESP_LOGE(TAG, "camera_fb_t start");
-
   if (s_state == NULL)
   {
     return NULL;
   }
-
-  ESP_LOGE(TAG, "I2S0 conf rx_start");
-
   if (!I2S0.conf.rx_start)
   {
     if (s_state->config.fb_count > 1)
@@ -1332,23 +1322,14 @@ camera_fb_t *esp_camera_fb_get()
     }
     i2s_run();
   }
-
-  ESP_LOGE(TAG, "xSemaphoreTake");
-
   if (s_state->config.fb_count == 1)
   {
     xSemaphoreTake(s_state->frame_ready, portMAX_DELAY);
   }
-
-  ESP_LOGE(TAG, "camera_fb_t s_state");
-
   if (s_state->config.fb_count == 1)
   {
     return (camera_fb_t *)s_state->fb;
   }
-
-  ESP_LOGE(TAG, "xQueueReceive");
-
   camera_fb_int_t *fb = NULL;
   if (s_state->fb_out)
   {
